@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ include "intelliera-devops.fullname" . }}
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ include "intelliera-devops.fullname" . }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ include "intelliera-devops.fullname" . }}
+
+    spec:
+      containers:
+        - name: {{ include "intelliera-devops.fullname" . }}
+
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          ports:
+            - containerPort: 8080
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

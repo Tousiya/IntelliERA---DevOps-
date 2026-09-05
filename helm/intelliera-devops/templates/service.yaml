@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: {{ include "intelliera-devops.fullname" . }}
+
+spec:
+  type: {{ .Values.service.type }}
+
+  selector:
+    app: {{ include "intelliera-devops.fullname" . }}
+
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}

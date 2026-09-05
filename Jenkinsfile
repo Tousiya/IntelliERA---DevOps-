@@ -73,12 +73,12 @@ pipeline {
                         --region us-east-1 \
                         --kubeconfig "$WORKSPACE/.kube/config"
 
-                        kubectl --kubeconfig "$WORKSPACE/.kube/config" \
-                        set image deployment/intelliera-devops-app \
-                        intelliera-devops-app=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+                        helm upgrade --install intelliera-devops helm/intelliera-devops \
+                        --kubeconfig "$WORKSPACE/.kube/config" \
+                        --set image.tag=${IMAGE_TAG}
 
                         kubectl --kubeconfig "$WORKSPACE/.kube/config" \
-                        rollout status deployment/intelliera-devops-app
+                        rollout status deployment/intelliera-devops
                     '''
                 }
             }
