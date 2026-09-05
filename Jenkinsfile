@@ -2,6 +2,12 @@ pipeline {
 
     agent any
 
+    environment {
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        ECR_REGISTRY = "396608803308.dkr.ecr.us-east-1.amazonaws.com"
+        ECR_REPOSITORY = "intelliera-devops-app"
+    }
+
     stages {
 
         stage('Build with Maven') {
@@ -15,7 +21,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('application') {
-                    sh 'docker build --platform linux/amd64 -t intelliera-devops-app:1.0 .'
+                    sh 'docker build --platform linux/amd64 -t ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} .'
                 }
             }
         }
@@ -37,11 +43,11 @@ pipeline {
                         docker login --username AWS --password-stdin \
                         396608803308.dkr.ecr.us-east-1.amazonaws.com
 
-                        docker tag intelliera-devops-app:1.0 \
-                        396608803308.dkr.ecr.us-east-1.amazonaws.com/intelliera-devops-app:1.0
+                        docker tag ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} \
+                        ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
 
                         docker push \
-                        396608803308.dkr.ecr.us-east-1.amazonaws.com/intelliera-devops-app:1.0
+                        ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
                     '''
                 }
             }
@@ -68,7 +74,8 @@ pipeline {
                         --kubeconfig "$WORKSPACE/.kube/config"
 
                         kubectl --kubeconfig "$WORKSPACE/.kube/config" \
-                        apply -f kubernetes/
+                        set image deployment/intelliera-devops-app \
+                        intelliera-devops-app=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
 
                         kubectl --kubeconfig "$WORKSPACE/.kube/config" \
                         rollout status deployment/intelliera-devops-app
