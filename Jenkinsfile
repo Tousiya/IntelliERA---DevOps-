@@ -15,7 +15,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('application') {
-                    sh 'docker build -t intelliera-devops-app:1.0 .'
+                    sh 'docker build --platform linux/amd64 -t intelliera-devops-app:1.0 .'
                 }
             }
         }
