@@ -24,13 +24,14 @@ pipeline {
             steps {
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'aws-intelliera',
+                        credentialsId: 'aws-ecr',
                         usernameVariable: 'AWS_ACCESS_KEY_ID',
                         passwordVariable: 'AWS_SECRET_ACCESS_KEY'
                     )
                 ]) {
                     sh '''
                         export AWS_DEFAULT_REGION=us-east-1
+                        export DYLD_LIBRARY_PATH=/opt/homebrew/opt/expat/lib
 
                         aws ecr get-login-password --region us-east-1 | \
                         docker login --username AWS --password-stdin \
