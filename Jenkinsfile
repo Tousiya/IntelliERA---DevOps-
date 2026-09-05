@@ -47,5 +47,35 @@ pipeline {
             }
         }
 
+        stage('Deploy to EKS') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'aws-ecr',
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                    )
+                ]) {
+                    sh '''
+                        export AWS_DEFAULT_REGION=us-east-1
+                        export DYLD_LIBRARY_PATH=/opt/homebrew/opt/expat/lib
+
+                        mkdir -p "$WORKSPACE/.kube"
+
+                        aws eks update-kubeconfig \
+                        --name intelliera-devops-cluster \
+                        --region us-east-1 \
+                        --kubeconfig "$WORKSPACE/.kube/config"
+
+                        kubectl --kubeconfig "$WORKSPACE/.kube/config" \
+                        apply -f kubernetes/
+
+                        kubectl --kubeconfig "$WORKSPACE/.kube/config" \
+                        rollout status deployment/intelliera-devops-app
+                    '''
+                }
+            }
+        }
+
     }
 }
