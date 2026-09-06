@@ -1,0 +1,4 @@
+app_name: IntelliERA DevOps Application
+app_environment: training
+app_version: "1.0.1"
+app_directory: /tmp/intelliera-app

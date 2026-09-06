@@ -1,0 +1,32 @@
+---
+- name: Configure IntelliERA local environment
+  hosts: local
+  connection: local
+  gather_facts: yes
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+
+    - name: Ensure IntelliERA application directory exists
+      file:
+        path: "{{ app_directory }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create application configuration
+      copy:
+        dest: "{{ app_directory }}/application.properties"
+        content: |
+          app.name={{ app_name }}
+          app.environment={{ app_environment }}
+          app.version={{ app_version }}
+        mode: '0644'
+      notify: Configuration changed
+
+  handlers:
+
+    - name: Configuration changed
+      debug:
+        msg: "Application configuration changed - service restart would happen here"
