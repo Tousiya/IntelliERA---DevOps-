@@ -2,3 +2,7 @@ target/
 *.class
 *.log
 .DS_Store
+
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
